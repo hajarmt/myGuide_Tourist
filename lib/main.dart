@@ -1,10 +1,14 @@
+
+import 'dart:io';
+import 'package:progress_indicators/progress_indicators.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:wave_generator/wave_generator.dart';
+import 'package:circle_wave_progress/circle_wave_progress.dart';
+import 'package:flutter_plugin_qrcode/flutter_plugin_qrcode.dart';
+import 'dart:async';
 import 'package:url_audio_stream/url_audio_stream.dart';
-
-import 'map.dart';
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -14,91 +18,107 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isplaying = false;
-  bool _ispaused = false;
-  bool _value = false;
   @override
   void initState() {
     super.initState();
   }
 
+  static String qrcode = "";
+  static AudioStream stream = null;
 
-  static AudioStream stream = new AudioStream("http://myguide.caster.fm");
-
-  void _start()async{
-    setState(() {
-      _isplaying=true;
-    });
-    stream.start();
+  void _start() async {
+    if(qrcode.isEmpty){
+      getQrcodeState();
+    }
+    else{
+      setState(() {
+        _isplaying = true;
+      });
+      stream.start();
+    }
   }
-  void _stop()async{
+  void _stop() async {
     setState(() {
-      _isplaying=false;
+      _isplaying = false;
     });
     stream.stop();
   }
-  void _pause()async{
-    setState(() {
-      _ispaused=true;
-    });
-    stream.pause();
-  }
-void _resume()async{
-  setState(() {
-    _ispaused=false;
-  });
-  stream.resume();
-}
-void ToMap(){
 
-}
+  Future<void> getQrcodeState() async {
+    try {
+      qrcode = await FlutterPluginQrcode.getQRCode;
+    } on PlatformException {
+      qrcode = '';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      stream = new AudioStream(qrcode);
+      _start();
+      print(
+          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" +
+              qrcode.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              title: const Text('Entendre votre streaming'),
-            ),
-            body: new Container(
-                padding: new EdgeInsets.all(20.0),
-                child: new Column(
-                  children: [
-                    new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        new Flexible(
-                          child: new Container(
-                              width: 190.0,
-                              height: 190.0,
-                              decoration:  BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image:  DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: AssetImage("images/audio_wave.png"))
-                              )),
-                        )
+          appBar: AppBar(
+           title: Text("My Guide"),
+            backgroundColor: Colors.cyanAccent,
+            centerTitle: true,
+            elevation: 0,
+          ),
+          body: Center(
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                  SizedBox(height: 50.0),
+                  if(_isplaying && !qrcode.isEmpty)
+                    CollectionScaleTransition(
+                      children: <Widget>[
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                        Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
                       ],
                     ),
-                    new Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          iconSize: 96.0,
-                          icon: Icon(_isplaying ? Icons.stop : Icons.play_arrow),
-                          onPressed: _isplaying ? _stop : _start,
-                        ),
-                        IconButton(
-                          iconSize: 96.0,
-                          icon: Icon(_ispaused ? Icons.refresh : Icons.pause),
-                          onPressed: _ispaused ? _resume : _pause,
-                        ),
-                      ],
-                    ),
-                  ],)
-            )
-        ),
+                ],
+              ),
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                  ),
+                ],
+    ),
+    ),
+          floatingActionButton: FloatingActionButton (
+                 child:Icon(
+                   _isplaying ?
+                   Icons.volume_up : Icons.volume_off,
+                   size: 50,
+                   color: Colors.cyanAccent,
+                 ),
+                 onPressed :(){
+                   if(_isplaying)
+                     _stop();
+                   else
+                     _start();
+                 },
+            backgroundColor: Colors.white,
+                  elevation: 50,
+
+          ),
+      ),
     );
   }
+
+
 }
