@@ -1,15 +1,18 @@
 
-import 'dart:io';
+import './pages/LiveLocationPage.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wave_generator/wave_generator.dart';
-import 'package:circle_wave_progress/circle_wave_progress.dart';
 import 'package:flutter_plugin_qrcode/flutter_plugin_qrcode.dart';
 import 'dart:async';
 import 'package:url_audio_stream/url_audio_stream.dart';
-void main() => runApp(MyApp());
+void main() => runApp(MaterialApp(
+  routes: {
+    '/' : (context) => MyApp(),
+    '/location' : (context) => LiveLocationPage(),
+  },
+));
 
 class MyApp extends StatefulWidget {
   @override
@@ -54,10 +57,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
     setState(() {
       stream = new AudioStream(qrcode);
-      _start();
-      print(
-          "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" +
-              qrcode.toString());
+      print("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" + qrcode.toString());
     });
   }
 
@@ -94,7 +94,61 @@ class _MyAppState extends State<MyApp> {
               ),
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-
+                    children: [
+                      SizedBox(height: 50.0),
+                      if(_isplaying && !qrcode.isEmpty)
+                        CollectionScaleTransition(
+                          children: <Widget>[
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                          ],
+                        ),
+                    ],
+                  ),
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 50.0),
+                      if(_isplaying && !qrcode.isEmpty)
+                        CollectionScaleTransition(
+                          children: <Widget>[
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                            Icon(Icons.adjust,size: 40,color: Colors.cyanAccent,),
+                          ],
+                        ),
+                    ],
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(270, 90, 0, 0),
+                    child: FloatingActionButton(
+                        onPressed: (){
+                          Navigator.pushNamed(context,"/location");
+                          },
+                      child: Icon(Icons.location_on,color: Colors.cyanAccent,size: 40,),
+                      backgroundColor: Colors.white,
+                      elevation: 5,
+                      heroTag: "btn2",
+                    ),
+                  ),
+                  new Container(
+                    margin: EdgeInsets.fromLTRB(270, 10, 0, 0),
+                    child: FloatingActionButton(
+                      onPressed: (){
+                        getQrcodeState();
+                      },
+                      child: Icon(Icons.scanner,color: Colors.cyanAccent,size: 40,),
+                      backgroundColor: Colors.white,
+                      elevation: 5,
+                      heroTag: "btn3",
+                    ),
                   ),
                 ],
     ),
@@ -103,7 +157,7 @@ class _MyAppState extends State<MyApp> {
                  child:Icon(
                    _isplaying ?
                    Icons.volume_up : Icons.volume_off,
-                   size: 50,
+                   size: 40,
                    color: Colors.cyanAccent,
                  ),
                  onPressed :(){
@@ -113,12 +167,10 @@ class _MyAppState extends State<MyApp> {
                      _start();
                  },
             backgroundColor: Colors.white,
-                  elevation: 50,
-
+                  elevation: 5,
+            heroTag: "btn1",
           ),
       ),
     );
   }
-
-
 }
