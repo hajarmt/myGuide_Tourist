@@ -8,6 +8,7 @@ import 'package:flutter_plugin_qrcode/flutter_plugin_qrcode.dart';
 import 'dart:async';
 import 'package:url_audio_stream/url_audio_stream.dart';
 void main() => runApp(MaterialApp(
+  debugShowCheckedModeBanner: false,
   routes: {
     '/' : (context) => MyApp(),
     '/location' : (context) => LiveLocationPage(),
@@ -63,9 +64,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
           appBar: AppBar(
            title: Text("My Guide"),
             backgroundColor: Colors.cyanAccent,
@@ -171,7 +170,6 @@ class _MyAppState extends State<MyApp> {
                   elevation: 5,
             heroTag: "btn1",
           ),
-      ),
     );
   }
 }
