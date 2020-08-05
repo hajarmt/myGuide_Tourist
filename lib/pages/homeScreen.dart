@@ -12,13 +12,10 @@ import 'package:url_audio_stream/url_audio_stream.dart';
 void main() =>  runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
   routes: {
-    '/' : (cont) => HomeScreen(),
-    '/location' : (cont) => LiveLocationPage(),
+    '/' : (context) => HomeScreen(),
+    '/location' : (context) => LiveLocationPage(),
   },
 ));
-
-
-BuildContext get cont => null;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -34,20 +31,30 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     imageCache.clear();
     return Scaffold(
-        bottomNavigationBar: BottomNavCustom(),
-        body: Container(
-            height: double.infinity,
-            width: double.infinity,
-            child: Image.asset(
-              "assets/images/background.png",
-              fit: BoxFit.cover,
-            )
-        )
+      //backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text("My Guide : Tourist",
+            style: TextStyle(
+                fontFamily: 'Raleway',
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        //elevation: 0.0,
+      ),
+      extendBodyBehindAppBar: true,
+      bottomNavigationBar: BottomNavCustom(),
+      body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          child: Image.asset(
+            "assets/images/background.png",
+            fit: BoxFit.cover,
+          )
+      ),
     );
   }
 }
@@ -61,6 +68,10 @@ class BottomNavCustom extends StatefulWidget {
 class _BottomNavCustomState extends State<BottomNavCustom> {
   int selectedIndex = 0;
   Color backgroundColorNav = Colors.white;
+  bool _isplaying = false;
+
+  static String qrcode = "";
+  static AudioStream stream = null;
 
   List<NavigationItem> items = [
     NavigationItem(Icon(MyFlutterApp.qr_scanner), Text('QR code Scanner'),  Color(0xff5732C4)),
@@ -68,6 +79,48 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
     NavigationItem(Icon(MyFlutterApp.search_location), Text('Locate the guide'), Color(0xff029BD8))
   ];
 
+  void _start() async {
+    if(qrcode.isEmpty){
+      getQRCodeState();
+    }
+    else{
+      setState(() {
+        _isplaying = true;
+      });
+      stream.start();
+    }
+  }
+
+  void _stop() async {
+    setState(() {
+      _isplaying = false;
+    });
+    stream.stop();
+  }
+
+  Future<void> getQRCodeState() async {
+    try {
+      qrcode = await FlutterPluginQrcode.getQRCode;
+    } on PlatformException {
+      qrcode = '';
+    }
+    if (!mounted) return;
+    setState(() {
+      stream = new AudioStream(qrcode);
+    });
+  }
+
+  gotoLiveLocationActivity(BuildContext context){
+    if(qrcode.isEmpty){
+      getQRCodeState();
+    }
+    else{
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LiveLocationPage()),
+      );
+    }
+  }
 
   Widget _buildItem(NavigationItem item, bool isSelected) {
     return AnimatedContainer(
@@ -107,43 +160,6 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
       ),
     );
   }
-  static bool _isplaying = false;
-
-  static String qrcode = "";
-  static AudioStream stream = null;
-
-  void _start() async {
-    if(qrcode.isEmpty){
-      getQrcodeState();
-    }
-    else{
-      setState(() {
-        _isplaying = true;
-      });
-      stream.start();
-    }
-  }
-  void _stop() async {
-    setState(() {
-      _isplaying = false;
-    });
-    stream.stop();
-  }
-
-  Future<void> getQrcodeState() async {
-    try {
-      qrcode = await FlutterPluginQrcode.getQRCode;
-    } on PlatformException {
-      qrcode = '';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      stream = new AudioStream(qrcode);
-      print("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" + qrcode.toString());
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +181,7 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
               });
               if(selectedIndex == 0){
                 print(selectedIndex);
-                getQrcodeState();
+                getQRCodeState();
               }else if(selectedIndex == 1){
                 if('Text("Turn volume on")' == items[selectedIndex].title.toString() && _isplaying){
                   items.removeAt(selectedIndex);
@@ -178,7 +194,7 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
                 }
               }else if(selectedIndex == 2){
                 print(selectedIndex);
-                Navigator.pushNamed(cont,"/location");
+                gotoLiveLocationActivity(context);
               }
             },
             child: _buildItem(item, selectedIndex == itemIndex),

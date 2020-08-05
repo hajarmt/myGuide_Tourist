@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 padding: EdgeInsets.all(16.0),
                 alignment: Alignment.bottomCenter,
                 child: Text(
-                  "Touriste Application",
+                  "Touriste application",
                   style: TextStyle(
                       fontSize: 28.0,
                       fontFamily: 'Pacifico'
