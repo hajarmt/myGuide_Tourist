@@ -232,7 +232,7 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
           var itemIndex = items.indexOf(item);
 
           if('Text("Turn on volume")' == item.title.toString()){
-            desc = "Click here to turn on/off volume";
+            desc = " Click here to turn on \n or off volume ";
             key = KeysToBeInherited.of(context).volumeKey;
           }else if('Text("Scan QR code")' == item.title.toString()){
             desc = "Click here to scan the QR code of your guide";
@@ -244,20 +244,20 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
           return  Showcase(
               key: key,
               description: desc,
-              showcaseBackgroundColor: Colors.lightBlue[100],
+              showcaseBackgroundColor: Color(0xffC7E6F1),
               descTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              overlayColor: Colors.white,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
                     selectedIndex = itemIndex;
                   });
-
                   if(selectedIndex == 0){
                     print(selectedIndex);
                     getQRCodeState();
                   }else if(selectedIndex == 1){
                     if('Text("Turn off volume")' == item.title.toString() && _isplaying){
-                      items[1].setIconText(Icon(Icons.volume_off), Text('Turn up volume'));
+                      items[1].setIconText(Icon(Icons.volume_off), Text('Turn on volume'));
                       _stop();
                     } else {
                       items[1].setIconText(Icon(Icons.volume_up), Text('Turn off volume'));

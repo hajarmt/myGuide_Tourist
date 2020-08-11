@@ -122,6 +122,7 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
         ),
       ),
     ];
+
     return new Scaffold(
       appBar: AppBar(
         title: Text(
@@ -131,9 +132,8 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xff514a9d),
       ),
-      extendBodyBehindAppBar: true,
       //drawer: buildDrawer(context, route),
       body: StreamBuilder(
           stream: Firestore.instance.collection("guides").snapshots(),
