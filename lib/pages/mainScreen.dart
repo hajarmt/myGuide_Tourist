@@ -58,7 +58,6 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
     setState(() {
       stream = new AudioStream(qrcode);
-      print("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" + qrcode.toString());
     });
   }
 
