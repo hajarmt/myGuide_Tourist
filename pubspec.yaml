@@ -27,7 +27,7 @@ dependencies:
   showcaseview: ^0.1.5
   flutter_launcher_icons: ^0.7.2
   shared_preferences: ^0.5.3+4
-  simple_tooltip: ^0.1.14
+  lottie: ^0.5.1
 
   flutter_plugin_qrcode: ^1.0.3
 

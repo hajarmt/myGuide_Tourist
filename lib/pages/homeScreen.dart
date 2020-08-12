@@ -156,6 +156,18 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
     stream.stop();
   }
 
+  void modify(int index) {
+    if (_isplaying) {
+      items[index].setIconColor(Icon(Icons.volume_off),Color(0xff3A4BD6));
+      //items[index].setText(Text("Turn on volume"));
+      _stop();
+    } else {
+      items[index].setIconColor(Icon(Icons.volume_up),Color(0xff062695));
+      //items[index].setText(Text("Turn off volume"));
+      _start();
+    }
+  }
+
   Future<void> getQRCodeState() async {
     try {
       qrcode = await FlutterPluginQrcode.getQRCode;
@@ -232,7 +244,7 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
           var itemIndex = items.indexOf(item);
 
           if('Text("Turn on volume")' == item.title.toString()){
-            desc = " Click here to turn on \n or off volume ";
+            desc = "Click here to turn on \n or off volume";
             key = KeysToBeInherited.of(context).volumeKey;
           }else if('Text("Scan QR code")' == item.title.toString()){
             desc = "Click here to scan the QR code of your guide";
@@ -256,14 +268,10 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
                     print(selectedIndex);
                     getQRCodeState();
                   }else if(selectedIndex == 1){
-                    if('Text("Turn off volume")' == item.title.toString() && _isplaying){
-                      items[1].setIconText(Icon(Icons.volume_off), Text('Turn on volume'));
-                      _stop();
-                    } else {
-                      items[1].setIconText(Icon(Icons.volume_up), Text('Turn off volume'));
-                      _start();
-                    }
-                  }else if(selectedIndex == 2){
+                    modify(selectedIndex);
+                    print("ggggggggggggggggggggggggggggg " + item.title.toString());
+
+                }else if(selectedIndex == 2){
                     print(selectedIndex);
                     gotoLiveLocationActivity(context);
                   }
@@ -280,12 +288,16 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
 class NavigationItem {
   Icon icon;
   Text title;
-  final Color color;
+  Color color;
+
+  void setText(Text title){
+    this.title = title;
+  }
 
   NavigationItem(this.icon, this.title, this.color);
 
-  setIconText(Icon icon, Text title){
-    this.title = title;
+  setIconColor(Icon icon,Color color){
     this.icon = icon;
+    this.color = color;
   }
 }
