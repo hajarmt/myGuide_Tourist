@@ -10,6 +10,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
   @override
   void initState(){
     super.initState();
@@ -46,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               Shimmer.fromColors(
                 period: Duration(milliseconds: 1500),
-                baseColor: Color(0xff514a9d),
+                baseColor: Color(0xff514aaf),
                 highlightColor: Color(0xff25c4db),
                 child: Container(
                   padding: EdgeInsets.all(16.0),

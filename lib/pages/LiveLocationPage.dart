@@ -4,7 +4,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 
 class LiveLocationPage extends StatefulWidget {
   @override
@@ -14,7 +13,7 @@ class LiveLocationPage extends StatefulWidget {
 class _LiveLocationPageState extends State<LiveLocationPage> {
   LocationData _currentLocation;
   MapController _mapController;
-  LatLng guide_position;
+  LatLng guidePosition;
   bool _liveUpdate = true;
   bool _permission = false;
 
@@ -89,7 +88,6 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
   @override
   Widget build(BuildContext context) {
     LatLng currentLatLng;
-    LatLng guideLatLng;
     if (_currentLocation != null) {
       currentLatLng =
           LatLng(_currentLocation.latitude, _currentLocation.longitude);
@@ -112,7 +110,7 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
       Marker(
         width: 100.0,
         height: 100.0,
-        point: guide_position,
+        point: guidePosition,
         builder: (ctx) => Container(
           child: Icon(
             Icons.location_on,
@@ -144,11 +142,11 @@ class _LiveLocationPageState extends State<LiveLocationPage> {
                       null &&
                   snapshot.data.documents[0]['lastLocation']['longitude'] !=
                       null)
-                guide_position = new LatLng(
+                guidePosition = new LatLng(
                     snapshot.data.documents[0]['lastLocation']['latitude'],
                     snapshot.data.documents[0]['lastLocation']['longitude']);
             } else {
-              guide_position = new LatLng(31, -8);
+              guidePosition = new LatLng(31, -8);
               print("null");
               print(snapshot.data);
             }

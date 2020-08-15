@@ -13,6 +13,7 @@ import 'dart:async';
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print('started app');
     return Scaffold(
       body: ShowCaseWidget(
         builder: Builder(
@@ -43,7 +44,7 @@ class KeysToBeInherited extends InheritedWidget {
   }) : super(child: child);
 
   static KeysToBeInherited of(BuildContext context) {
-    return context.inheritFromWidgetOfExactType(KeysToBeInherited);
+    return context.dependOnInheritedWidgetOfExactType();
   }
 
   @override
@@ -123,19 +124,30 @@ class BottomNavCustom extends StatefulWidget {
   _BottomNavCustomState createState() => _BottomNavCustomState();
 }
 
+extension ListUpdate<T> on List {
+  List update(int pos, T t) {
+    List<T> list = new List();
+    list.add(t);
+    replaceRange(pos, pos+1, list);
+    print("list update" + t.toString() );
+    print("list updated" + this[pos].toString() );
+    return this;
+  }
+}
+
 class _BottomNavCustomState extends State<BottomNavCustom> {
   int selectedIndex = 0;
   Color backgroundColorNav = Colors.white;
-  bool _isplaying = false;
+  bool _isPlaying = false;
 
-  static String qrcode = "";
-  static AudioStream stream = null;
+  static String qrcode;
+  static AudioStream stream;
 
-  List<NavigationItem> items = [
-    NavigationItem(Icon(MyFlutterApp.qr_scanner), Text('Scan QR code'),  Color(0xff5732C4)),
+  List items = [
+    NavigationItem(Icon(MyFlutterApp.qr_scanner), Text('Scan QR code'), Color(0xff5732C4)),
     NavigationItem(Icon(Icons.volume_off), Text('Turn on volume'), Color(0xff062695)),
-    NavigationItem(Icon(MyFlutterApp.search_location), Text('Locate the guide'), Color(0xff029BD8))
-  ];
+    NavigationItem(Icon(MyFlutterApp.search_location), Text('Locate the guide'),Color(0xff029BD8))];
+
 
   void _start() async {
     if(qrcode.isEmpty){
@@ -143,29 +155,21 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
     }
     else{
       setState(() {
-        _isplaying = true;
+        _isPlaying = true;
       });
+      items.update(1, new NavigationItem(Icon(Icons.volume_up), Text('Turn off volume'), Color(0xff3A4BD6)));
+      print("volume turned on the volume");
       stream.start();
     }
   }
 
   void _stop() async {
+    print("volume turned off the volume");
     setState(() {
-      _isplaying = false;
+      _isPlaying = false;
     });
+    items.update(1, new NavigationItem(Icon(Icons.volume_off), Text('Turn on volume'), Color(0xff062695)));
     stream.stop();
-  }
-
-  void modify(int index) {
-    if (_isplaying) {
-      items[index].setIconColor(Icon(Icons.volume_off),Color(0xff3A4BD6));
-      //items[index].setText(Text("Turn on volume"));
-      _stop();
-    } else {
-      items[index].setIconColor(Icon(Icons.volume_up),Color(0xff062695));
-      //items[index].setText(Text("Turn off volume"));
-      _start();
-    }
   }
 
   Future<void> getQRCodeState() async {
@@ -188,6 +192,8 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
   }
 
   Widget _buildItem(NavigationItem item, bool isSelected) {
+    print(item.toString());
+    print(isSelected);
     return  AnimatedContainer(
       duration: Duration(milliseconds: 240),
       height: 50,
@@ -228,9 +234,6 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
 
   @override
   Widget build(BuildContext context) {
-    String desc = "";
-    GlobalKey key;
-
     return Container(
       height: 56,
       padding: EdgeInsets.only(left: 30, top: 4, bottom: 4, right: 30),
@@ -240,46 +243,59 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
       width: MediaQuery.of(context).size.width,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: items.map((item) {
-          var itemIndex = items.indexOf(item);
-
-          if('Text("Turn on volume")' == item.title.toString()){
-            desc = "Click here to turn on \n or off volume";
-            key = KeysToBeInherited.of(context).volumeKey;
-          }else if('Text("Scan QR code")' == item.title.toString()){
-            desc = "Click here to scan the QR code of your guide";
-            key = KeysToBeInherited.of(context).qRCodeKey;
-          }else if('Text("Locate the guide")' == item.title.toString()){
-            desc = "Click here to locate your guide";
-            key = KeysToBeInherited.of(context).locationKey;
-          }
-          return  Showcase(
-              key: key,
-              description: desc,
+        children: <Showcase>[
+          Showcase(
+              description: "Click here to scan the QR code of your guide",
+              key: KeysToBeInherited.of(context).qRCodeKey,
               showcaseBackgroundColor: Color(0xffC7E6F1),
               descTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               overlayColor: Colors.white,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
-                    selectedIndex = itemIndex;
+                    selectedIndex = 0;
                   });
-                  if(selectedIndex == 0){
-                    print(selectedIndex);
-                    getQRCodeState();
-                  }else if(selectedIndex == 1){
-                    modify(selectedIndex);
-                    print("ggggggggggggggggggggggggggggg " + item.title.toString());
-
-                }else if(selectedIndex == 2){
-                    print(selectedIndex);
-                    gotoLiveLocationActivity(context);
-                  }
+                  print(selectedIndex);
+                  getQRCodeState();
                 },
-                child:_buildItem(item, selectedIndex == itemIndex),
+                child:_buildItem(items[0], selectedIndex == 0),
               )
-          );
-        }).toList(),
+          ),
+          Showcase(
+              key : KeysToBeInherited.of(context).volumeKey,
+              description : "Click here to turn on or off volume,\nit is turned off by default",
+              showcaseBackgroundColor: Color(0xffC7E6F1),
+              descTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              overlayColor: Colors.white,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 1;
+                  });
+                  print(selectedIndex);
+                  if(_isPlaying) _stop();else _start();
+                },
+                child:_buildItem(items[1], selectedIndex == 1),
+              )
+          ),
+          Showcase(
+              description: "Click here to locate your guide",
+              key: KeysToBeInherited.of(context).locationKey,
+              showcaseBackgroundColor: Color(0xffC7E6F1),
+              descTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+              overlayColor: Colors.white,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 2;
+                  });
+                  gotoLiveLocationActivity(context);
+
+                },
+                child:_buildItem(items[2], selectedIndex == 2),
+              )
+          )
+        ].toList()
       ),
     );
   }
@@ -290,14 +306,5 @@ class NavigationItem {
   Text title;
   Color color;
 
-  void setText(Text title){
-    this.title = title;
-  }
-
   NavigationItem(this.icon, this.title, this.color);
-
-  setIconColor(Icon icon,Color color){
-    this.icon = icon;
-    this.color = color;
-  }
 }
